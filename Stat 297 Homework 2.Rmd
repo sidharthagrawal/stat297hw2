@@ -1,5 +1,6 @@
 ---
 title: "Stat 297 Homework 2"
+author: "Eric, Sidharth, Kaiyi, Kai"
 output: html_document
 ---
 
@@ -16,3 +17,4 @@ for (i in 1:100) {
   else print(i)
 }
 ```
+
