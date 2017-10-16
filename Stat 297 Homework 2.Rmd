@@ -202,6 +202,49 @@ $$
 $$
   
 ###Question 4: Construct a portfolio
-  
+```{r}  
+library(quantmod)
+
+# Download data
+today <- Sys.Date()
+three_years_ago <- seq(today, length = 2, by = "-3 year")[2]
+getSymbols("AAPL", from = three_years_ago, to = today)
+getSymbols("NFLX", from = three_years_ago, to = today)
+getSymbols("CSX", from = three_years_ago, to = today)
+getSymbols("SJM", from = three_years_ago, to = today)
+
+# Compute returns
+Ra <- na.omit(ClCl(AAPL))
+Rn <- na.omit(ClCl(NFLX)) 
+Rc <- na.omit(ClCl(CSX))
+Rs <- na.omit(ClCl(SJM))
+
+R = list(Ra, Rn, Rc, Rs)
+
+n = 4 ## number of stocks to choose from 
+total = 1000000
+exe_fee_limit = 100
+
+for (i in 1:n){
+ for(j in 1:i){
+   if(i !=j){
+     # Estimation of mu and Sigma
+     Sigma = cov(cbind(R[[i]],R[[j]]))
+     mu = c(mean(R[[i]]), mean(R[[j]]))
+     # Compute omega^*
+     omega_star = (Sigma[2, 2] - Sigma[1, 2])/(Sigma[1, 1] + Sigma[2, 2] - 2*Sigma[1, 2])
+     # Compute investment expected value and variance
+     mu_investment = omega_star*mu[1] + (1 - omega_star)*mu[2]
+     var_investment = omega_star^2*Sigma[1,1] + (1 - omega_star)^2*Sigma[2,2] + 
+       2*omega_star*(1 - omega_star)*Sigma[1,2]
+     exe_fee =max(c(40, 0.0001*1000000*omega_star))+max(c(40, 0.0001*100000*(1-omega_star))) 
+     if(exe_fee <= 100){
+       cat("investing on ", i, " and ", j, "with variance", var_investment)
+     }
+   }
+  }
+}
 
 
+ 
+```
