@@ -20,6 +20,7 @@ for (i in 1:100) {
 
 
 ### Question 2: Map
+```{r}
 install.packages("ggmap")
 install.packages('rvest')
 library(maps)
@@ -55,3 +56,152 @@ ggmap(map) + geom_point(data = uni_coord,
   xlab("Longitude") + ylab("Latitude")
 
 ```
+
+###Question 3: 3D Random Walks
+***part (a):***
+  
+```{r}
+library(plot3D)
+x0 = c(0,0,0)
+B = 10^4
+set.seed(1982)
+Ut <- runif(B)
+head(Ut)
+
+walk_fun = function(u){
+  if(u<=1/6){
+    fu = c(1,0,0)
+  } else if (u > 1/6 & u <=1/3){
+    fu = c(-1,0,0)
+  }else if (u>1/3 & u<=1/2){
+    fu = c(0,1,0)
+  }else if(u>1/2 & u<=2/3){
+    fu = c(0,-1,0)
+  }else if(u >2/3 & u<=5/6){
+    fu = c(0,0,1)
+  }else{
+    fu = c(0,0,-1)
+  }
+}
+x = array(NA, dim = c(3,B))
+for(i in 1:B){
+  x[,i] = x0 + walk_fun(Ut[i])
+  x0 = x[,i]
+}
+
+segments3D(x[1,], x[2,], x[3,], ticktype = "detailed")
+scatter3D(x0[1], x0[2],x0[3], col ="red",  add=TRUE)
+scatter3D(x[1,B], x[2,B],x[3,B], col ="blue",  add=TRUE)
+```
+
+***part (b):***
+```{r}
+x0 = c(0,0,0)
+B = 10^5
+set.seed(2000)
+Ut <- runif(B)
+head(Ut)
+
+walk_fun = function(u){
+  if(u<=1/6*0.99){
+    fu = c(1,0,0)
+  } else if (u > 1/6*0.99 & u <=1/3*0.99){
+    fu = c(-1,0,0)
+  }else if (u>1/3*0.99 & u<=1/2*0.99){
+    fu = c(0,1,0)
+  }else if(u>1/2*0.99 & u<=2/3*0.99){
+    fu = c(0,-1,0)
+  }else if(u >2/3*0.99 & u<=5/6*0.99){
+    fu = c(0,0,1)
+  }else{
+    fu = c(0,0,-1)
+  }
+}
+x = array(NA, dim = c(3,B))
+for(i in 1:B){
+  x[,i] = x0 + walk_fun(Ut[i])
+  x0 = x[,i]
+}
+segments3D(x[1,], x[2,], x[3,], ticktype = "detailed")
+scatter3D(x0[1], x0[2],x0[3], col ="red",  add=TRUE)
+scatter3D(x[1,B], x[2,B],x[3,B], col ="blue",  add=TRUE)
+```
+
+
+***part (c):***
+$$
+  \mathbb{E}[X_B]  = \mathbb{E}[\sum_{i=1}^{B}f(U_t)] = B\cdot \mathbb{E}[f(U_t)].\\
+$$
+  
+$$
+  \begin{aligned}
+\mathbb{E}[f(U_t)] &= \sum_{i=0}^{6}f(U_i)\cdot \text{Pr} (f(U_i))\\
+&=  
+  \begin{bmatrix}
+1\\ 
+0\\ 
+0
+\end{bmatrix}
+\cdot \frac{1}{6}\cdot 0.99 +
+  \begin{bmatrix}
+-1\\ 
+0\\ 
+0
+\end{bmatrix}
+\cdot\frac{1}{6}\cdot 0.99+
+  \begin{bmatrix}
+0\\ 
+1\\ 
+0
+\end{bmatrix}
+\cdot\frac{1}{6}\cdot 0.99+
+  \begin{bmatrix}
+0\\ 
+-1\\ 
+0
+\end{bmatrix}
+\cdot\frac{1}{6}\cdot 0.99 \\
+&+\begin{bmatrix}
+0\\ 
+0\\ 
+1
+\end{bmatrix}
+\cdot\frac{1}{6}\cdot 0.99+
+  \begin{bmatrix}
+0\\ 
+0\\ 
+-1
+\end{bmatrix}
+\cdot [1 - \frac{5}{6}\cdot 0.99]\\
+&=\begin{bmatrix}
+0\\ 
+0\\ 
+1
+\end{bmatrix}
+\cdot\frac{1}{6}\cdot 0.99+
+  \begin{bmatrix}
+0\\ 
+0\\ 
+-1
+\end{bmatrix}
+\cdot [0.01 - \frac{1}{6} \cdot 0.99] 
+=\begin{bmatrix}
+0\\ 
+0\\ 
+-0.01
+\end{bmatrix}
+\end{aligned}
+$$
+$$
+  \mathbb{E}[X_B]=
+  \begin{bmatrix}
+0\\ 
+0\\ 
+-0.01B
+\end{bmatrix}
+$$
+  
+###Question 4: Construct a portfolio
+  
+
+
